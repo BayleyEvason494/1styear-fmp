@@ -2,57 +2,74 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController2D : MonoBehaviour {
-
+public class PlayerController2D : MonoBehaviour
+{
     Animator animator;
     Rigidbody2D rb2d;
-    SpriteRenderer SpriteRenderer;
+    SpriteRenderer spriteRenderer;
 
     bool isGrounded;
 
     [SerializeField]
-    Transform groundcheck;
+    Transform groundCheck;
+    [SerializeField]
+    private float runspeed =8;
+    [SerializeField]
+    private float jumpheight = 11;
 
-
-    private void Start()
+    void Start()
     {
+
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
-        SpriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
     }
-
-
     private void FixedUpdate()
     {
-
-        if (Physics2D.Linecast(transform.position, groundcheck, 1 << LayerMask.NameToLayer("ground")))
+        if (Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground")))
         {
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
 
+        bool pressedKey = false;
+
+        if (Input.GetKey("w") && isGrounded)
+        {
+            pressedKey = true;
+            rb2d.velocity = new Vector2(rb2d.velocity.x, jumpheight);
+            animator.Play("Player_jump");
         }
         if (Input.GetKey("d"))
         {
-            rb2d.velocity = new Vector2(8, rb2d.velocity.y);
-            animator.Play("Player_run");
-            SpriteRenderer.flipX = false;
+            pressedKey = true;
+            rb2d.velocity = new Vector2(runspeed, rb2d.velocity.y);
+            if (isGrounded)
+                animator.Play("Player_run");
+            spriteRenderer.flipX = false;
         }
-
         else if (Input.GetKey("a"))
         {
-            rb2d.velocity = new Vector2(-8, rb2d.velocity.y);
-            animator.Play("Player_run");
-            SpriteRenderer.flipX = true;
+            pressedKey = true;
+            rb2d.velocity = new Vector2(-runspeed, rb2d.velocity.y);
+            if (isGrounded)
+                animator.Play("Player_run");
+            spriteRenderer.flipX = true;
         }
-
-        else
+        if (pressedKey == false)
         {
-            animator.Play("Player_idle");
+            if (isGrounded)
+                animator.Play("Player_idle");
             rb2d.velocity = new Vector2(0, rb2d.velocity.y);
         }
 
-        if (Input.GetKey("w"))
-        {
-            rb2d.velocity = new Vector2(rb2d.velocity.x, 3);
-            animator.Play("Player_jump");
-        }
+
     }
+    
 }
+
+
