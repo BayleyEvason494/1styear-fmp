@@ -7,6 +7,7 @@ public class PlayerController2D : MonoBehaviour
     Animator animator;
     Rigidbody2D rb2d;
     SpriteRenderer spriteRenderer;
+    public static float ItemPickUp;
 
     bool isGrounded;
 
